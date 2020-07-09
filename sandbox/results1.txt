@@ -1,0 +1,69 @@
+-People who bought this also bought
+User 26645
+     Known positives:
+                  315545
+                  320494
+                  370360
+     Recommended:
+                  147782
+                  122413
+                  407822
+                  346662
+                  345279
+Added knowledge to model....✅
+
+User 10979
+     Known positives:
+                  178430
+                  252769
+                  258856
+                  276240
+                  277380
+     Recommended:
+                  51201
+                  246318
+                  237932
+                  102140
+                  137352
+Added knowledge to model....✅
+
+User 57418
+     Known positives:
+                  247930
+                  252593
+                  255790
+                  339517
+                  358211
+     Recommended:
+                  15948
+                  257611
+                  181102
+                  397796
+                  182268
+Added knowledge to model....✅
+
+User 12831
+     Known positives:
+                  124193
+                  225727
+                  288795
+                  393419
+     Recommended:
+                  97307
+                  371485
+                  455319
+                  396042
+                  2640
+Added knowledge to model....✅
+
+User 95883
+     Known positives:
+                  315685
+                  414746
+     Recommended:
+                  66974
+                  208051
+                  179110
+                  239774
+                  46528
+Added knowledge to model....✅
