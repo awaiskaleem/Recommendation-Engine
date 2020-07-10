@@ -80,8 +80,11 @@ To train the model
 
 To predict for a certain user with a user_id
 
-```make predict user_id=123455``` [To get default number (100) of recommendations back]
-```make predict user_id=123455 N=7```  [To get 7 recommendations back]
+<i>[To get default number (100) of recommendations back]<i>
+```make predict user_id=123455``` 
+
+<i>[To get 7 recommendations back]</i>
+```make predict user_id=123455 N=7```  
 
 
 Note that if the user id is known, it will output existing knowledge and recommendations. If user is new and never seen before (from model's point of view), it will output most popular items, currently known.
