@@ -45,13 +45,11 @@ class Model:
 
     def train(self):
         print("Training")
-        # self.model_without_items = LightFM(no_components=20, loss='warp', learning_rate=0.01)
-        self.model_without_items = LightFM(no_components=10, loss='warp')
+        self.model_without_items = LightFM(no_components=30, loss='warp', learning_rate = 0.01)
         self.model_without_items = self.fit_model(self.model_without_items, self.model_data)
         self.display_results(self.model_without_items, self.model_data)
         
-        # self.model_with_items = LightFM(no_components=20, loss='warp', learning_rate=0.01)
-        self.model_with_items = LightFM(no_components=10, loss='warp')
+        self.model_with_items = LightFM(no_components=30, loss='warp', learning_rate = 0.01)
         self.model_with_items = self.fit_model(self.model_with_items, self.model_data, item_flg = 'items')
         self.display_results(self.model_with_items, self.model_data , item_flg = 'items')
         
@@ -68,7 +66,8 @@ class Model:
         print("Saving Matices")
         self.save_matrices(self.model_data.rate_matrix)
 
-    def fit_model(self, model, model_data, item_flg = '', item_features= None, stage = "train"):
+    def fit_model(self, model, model_data, item_flg = '', stage = "train"):
+        item_features= None
         result_string = "Training model WITHOUT items"
         if item_flg == 'items':
             result_string = "Training model WITH items"
@@ -77,7 +76,6 @@ class Model:
         return model.fit(
             model_data.rate_matrix[stage]
             , item_features = item_features
-            # , epochs=50, num_threads=8)
             , epochs=100, num_threads=8)
             
     
@@ -94,11 +92,6 @@ class Model:
         num_threads = 8)
 
         top_k = 100
-        precision = precision_at_k(model = model, 
-                                test_interactions = model_data.rate_matrix['test'],
-                                item_features = item_feats,
-                                num_threads = 8,
-                                k = top_k)
 
         recall = recall_at_k(model = model, 
                                 test_interactions = model_data.rate_matrix['test'],
@@ -107,7 +100,6 @@ class Model:
                                 k = top_k)
 
         print("average AUC "+ result_string +" adding item-feature interaction = {0:.{1}f}".format(auc.mean(), 2))
-        print("average Precision at "+ str(top_k) +" is "+result_string +" adding item-feature interaction = {0:.{1}f}".format(precision.mean(), 2))
         print("average Recall at "+ str(top_k) +" is "+ result_string +" adding item-feature interaction = {0:.{1}f}".format(recall.mean(), 2))
 
     def save_models(self, model, filename):
@@ -116,7 +108,7 @@ class Model:
 
     def save_matrices(self, matrix):
         for matrix_name in matrix:
-            print("Saving "+matrix_name)
+            print("Saving Matrix"+matrix_name)
             sparse.save_npz(self.model_path+'rate_matrix_'+matrix_name+'.npz', matrix[matrix_name])
 
     def load_models(self, filename):

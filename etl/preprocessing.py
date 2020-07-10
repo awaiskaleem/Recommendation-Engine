@@ -22,25 +22,13 @@ class Preprocessor:
         
 
     def apply_business_logic(self, items, interactions):
-        #All items in train should be available in items
-        # interactions.events = interactions.events[(interactions.events['itemid'].isin(items.items['itemid']))]
-        # interactions.train = interactions.train[(interactions.train['itemid'].isin(items.items['itemid']))]
-        
-        #All in test should be available in train
-        interactions.test =  interactions.test[
-            (interactions.test['visitorid'].isin(interactions.train['visitorid'])) & 
-            (interactions.test['itemid'].isin(interactions.train['itemid']))
-        ]
-        # DO NOT NEED: All in items should be there in train
         items.items = items.items[(items.items['itemid'].isin(interactions.events['itemid']))]
-        # DO NOT NEED: All in test should be there in items
-        # interactions.test = interactions.test[(interactions.test['itemid'].isin(items.items['itemid']))]
         return items, interactions
 
     def premodel_processing(self, items, interactions, feature_col = 'features'):
         id_cols=[interactions.user_col,items.item_col]
         for k in id_cols:
-            self.cate_enc_dict[k] = preprocessing.LabelEncoder().fit(interactions.events[k].values)
+            self.cate_enc_dict[k] = preprocessing.LabelEncoder().fit(interactions.train[k].values)
             self.trans_cat_all[k]=self.cate_enc_dict[k].transform(interactions.events[k].values)
             self.trans_cat_train[k]=self.cate_enc_dict[k].transform(interactions.train[k].values)
             self.trans_cat_test[k]=self.cate_enc_dict[k].transform(interactions.test[k].values)

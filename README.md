@@ -98,3 +98,9 @@ Note that if the user id is known, it will output existing knowledge and recomme
 To use file based predictions, you need "prediction.csv" inside ./data folder before you launch. A file named "results.csv" will be created as a result of batch predictions.
 
 ```make predict_file```
+
+### ShutDown
+
+Simply type:
+
+```make shutdown```

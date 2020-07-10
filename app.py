@@ -24,9 +24,12 @@ def predict(user_id, recom_count):
     recom_count = int(recom_count)
     model.model_without_items = model.load_models('model_without_items')
     model.model_with_items = model.load_models('model_with_items')
-    model.model_data.cate_enc_dict['visitorid'] = model.load_models('cate_enc_dict_visitorid')
-    model.model_data.cate_enc_dict['itemid'] = model.load_models('cate_enc_dict_itemid')
-    model.load_matrices('feature')
+    
+    ### These should already be created with app launch
+    # model.model_data.cate_enc_dict['visitorid'] = model.load_models('cate_enc_dict_visitorid')
+    # model.model_data.cate_enc_dict['itemid'] = model.load_models('cate_enc_dict_itemid')
+    # model.load_matrices('feature')
+    
     final_result = model.get_predictions(recom_count,user_id,model.model_without_items)
     print("Success")
     return jsonify(final_result)
@@ -37,9 +40,12 @@ def predict_file(recom_count):
     recom_count = int(recom_count)
     model.model_without_items = model.load_models('model_without_items')
     model.model_with_items = model.load_models('model_with_items')
-    model.model_data.cate_enc_dict['visitorid'] = model.load_models('cate_enc_dict_visitorid')
-    model.model_data.cate_enc_dict['itemid'] = model.load_models('cate_enc_dict_itemid')
-    model.load_matrices('feature')
+    
+    ### These should already be created with app launch
+    # model.model_data.cate_enc_dict['visitorid'] = model.load_models('cate_enc_dict_visitorid')
+    # model.model_data.cate_enc_dict['itemid'] = model.load_models('cate_enc_dict_itemid')
+    # model.load_matrices('feature')
+    
     model.predict_file(recom_count,model.model_without_items)
     return "Success"
 

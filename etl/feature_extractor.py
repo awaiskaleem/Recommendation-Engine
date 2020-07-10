@@ -7,7 +7,7 @@ class Interactions:
     def __init__(self
     ,data_path="./data/"
     ,start_date='2015-05-03'
-    ,end_date='2015-05-18'
+    ,end_date='2015-08-31'
     , split_ratio = 0.8
     , user_col = 'visitorid'
     , item_col = 'itemid'): 
@@ -59,6 +59,11 @@ class Interactions:
         self.test =  self.test[
             (self.test['visitorid'].isin(self.train['visitorid'])) & 
             (self.test['itemid'].isin(self.train['itemid']))
+        ]
+
+        self.events =  self.events[
+            (self.events['visitorid'].isin(self.train['visitorid'])) & 
+            (self.events['itemid'].isin(self.train['itemid']))
         ]
 
     def run_unit_tests(self):
