@@ -67,63 +67,20 @@ If the data is already downloaded then copy the *.csv files into `./data` folder
 
 ## Project Environment Setup
 
-### Docker Compose
+You can use the makefile to start the docker services in the background. 
 
-We have created a docker-compose environment based on the [jupyeter notebook stacks](https://github.com/jupyter/docker-stacks) and the [Big Data Europe Hive docker-compose](https://github.com/big-data-europe/docker-hive).
+To start the docker file and set up the environment
 
-You can use the makefile to start the docker services in the background. The notebook url will be output in the logs:
+```make launch```
 
-```shell
-$ make up
-Creating network "big-data-mimic_default" with the default driver
-Creating big-data-mimic_datanode_1                  ... done
-Creating big-data-mimic_namenode_1                  ... done
-Creating big-data-mimic_hive-metastore-postgresql_1 ... done
-Creating big-data-mimic_hive-metastore_1            ... done
-Creating big-data-mimic_hive-server_1               ... done
-Creating big-data-mimic_notebook_1 ... done
-Attaching to big-data-mimic_notebook_1
-notebook_1                   |     To access the notebook, open this file in a browser:
-notebook_1                   |         file:///home/jovyan/.local/share/jupyter/runtime/nbserver-14-open.html
-notebook_1                   |     Or copy and paste one of these URLs:
-notebook_1                   |         http://jupyter.dev.internal:8888/jupyter/?token=b66683c5b5adb35c5270061db6b7e90e0a0ae70754ed6623
-notebook_1                   |      or http://127.0.0.1:8888/jupyter/?token=b66683c5b5adb35c5270061db6b7e90e0a0ae70754ed6623
-```
+To train the model
 
-The services will take around between 15 and 25 seconds to startup. To stop the services:
+```make train```
 
-```shell
-$ make stop
-```
+To predict for a certain user with a user_id
 
-To stop only the notebook or the hive services:
+```make predict user=123455```
 
-```shell
-$ make stop-hive
-$ make stop-notebook
-```
+Note that if the user id is known, it will output existing knowledge and recommendations. If user is new and never seen before (from model's point of view), it will output most popular items.
 
-To remove all the containers:
-```shell
-make clean
-```
-
-Or you can use the docker-compose commands:
-
-```shell
-$ docker-compose up
-```
-
-This will start both of the services and output the logs in stdout. You can use the  `-d` flag to be started as a daemon. To run just one service run:
-
-```shell
-$ docker-compose up notebook
-$ docker-compose up hive-server
-```
-
-And to stop them:
-
-```shell
-$ docker-compose stop
-```
-
+To use file based predictions, you need "prediction.csv" inside ./data folder before you launch. A file named "results.csv" will be created as a result of batch predictions.

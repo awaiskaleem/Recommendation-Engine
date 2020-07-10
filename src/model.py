@@ -10,7 +10,7 @@ from etl.preprocessing import Preprocessor
 import pickle
 from scipy import sparse
 from flask import Flask, jsonify
-from sklearn.externals import joblib
+import joblib
 import pandas as pd
 import numpy as np
 from flask import Flask, request, render_template, jsonify
@@ -156,12 +156,11 @@ class Model:
         print("Predicting for user:",usr)
         result_list = []
         if (self.interactions.events[self.interactions.events['visitorid']==usr].shape[0]==0):
-            print("User Not Found")
+            print("User Not Found, printing top ",recom_num," Recoms")
             result_list = self.interactions.popular_items[:recom_num]
         else:
-            print("User FOUND!!!")
+            print("Existing User. Personalizing...")
             result_list = self.predict_recom(usr, recom_num, model)
-        print(result_list)
         return result_list
 
     def predict_file(self, recom_num, model, pred_filename = 'predictions'):

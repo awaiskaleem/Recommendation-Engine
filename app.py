@@ -7,7 +7,7 @@ from src.model import Model
 import pickle
 import numpy as np
 import pandas as pd
-from sklearn.externals import joblib
+import joblib
 
 from flask import Flask, jsonify
 from flask import Flask, request, render_template, jsonify
@@ -30,7 +30,6 @@ def predict(user_id, recom_count):
     model.model_data.cate_enc_dict['itemid'] = model.load_models('cate_enc_dict_itemid')
     model.load_matrices('feature')
     final_result = model.get_predictions(recom_count,user_id,model.model_without_items)
-    print(final_result)
     return "Success"
 
 @app.route('/predict_file', defaults={'recom_count': 100})
@@ -49,4 +48,5 @@ if __name__ == "__main__":
     global model
     model = Model()
     model.load_training_data()
-    app.run(port=8080)
+    app.run(host='0.0.0.0')
+    # app.run()
