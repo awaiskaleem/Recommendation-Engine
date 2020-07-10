@@ -67,8 +67,7 @@ If the data is already downloaded then copy the *.csv files into `./data` folder
 
 ## Project Environment Setup
 
-You can use the makefile to start the docker services in the background. 
-To setup whole API environment, simply type:
+You can use the makefile to start the docker services in the background. At any point in time if you're not sure about the comment type in ```make help``` to display a list of options available. To setup whole API environment, simply type:
 
 ### Batch Predictions
 
