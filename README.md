@@ -1,4 +1,5 @@
 # E-Commerce-Recommendation-Engine
+### Case Study for Klarna Interview
 
 The project build on e-commerce user visit data and creates a recommendation engine. Target predictions are items recommended for a particular use. Project also supports batch file as input and output in /output directory.
 
@@ -64,8 +65,12 @@ If the data is already downloaded then copy the *.csv files into `./data` folder
 ## Project Environment Setup
 
 You can use the makefile to start the docker services in the background. 
+To setup whole API environment, simply type:
 
-To start the docker file and set up the environment
+```make build```
+
+This will build up docker image and launch it.
+If you've already built it before and want to straight up launch your API, type:
 
 ```make launch```
 
@@ -75,8 +80,12 @@ To train the model
 
 To predict for a certain user with a user_id
 
-```make predict user=123455```
+```make predict user_id=123455``` [To get default number (100) of recommendations back]
+```make predict user_id=123455 N=7```  [To get 7 recommendations back]
 
-Note that if the user id is known, it will output existing knowledge and recommendations. If user is new and never seen before (from model's point of view), it will output most popular items.
+
+Note that if the user id is known, it will output existing knowledge and recommendations. If user is new and never seen before (from model's point of view), it will output most popular items, currently known.
 
 To use file based predictions, you need "prediction.csv" inside ./data folder before you launch. A file named "results.csv" will be created as a result of batch predictions.
+
+```make predict_file```
