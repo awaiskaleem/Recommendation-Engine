@@ -36,9 +36,6 @@ The project build on e-commerce user visit data and creates a recommendation eng
     ├── model.py
 ```
 
-> Project based on the [cookiecutter data science project template](https://drivendata.github.io/cookiecutter-data-science/)
-
-
 ## Requirements
 
 Make sure you have the following requirements installed:
