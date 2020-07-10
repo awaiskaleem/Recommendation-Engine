@@ -8,8 +8,6 @@ import pickle
 import numpy as np
 import pandas as pd
 import joblib
-
-from flask import Flask, jsonify
 from flask import Flask, request, render_template, jsonify
 
 app = Flask(__name__)
@@ -30,7 +28,8 @@ def predict(user_id, recom_count):
     model.model_data.cate_enc_dict['itemid'] = model.load_models('cate_enc_dict_itemid')
     model.load_matrices('feature')
     final_result = model.get_predictions(recom_count,user_id,model.model_without_items)
-    return "Success"
+    print("Success")
+    return jsonify(final_result)
 
 @app.route('/predict_file', defaults={'recom_count': 100})
 @app.route('/predict_file/<recom_count>')
@@ -49,4 +48,3 @@ if __name__ == "__main__":
     model = Model()
     model.load_training_data()
     app.run(host='0.0.0.0')
-    # app.run()

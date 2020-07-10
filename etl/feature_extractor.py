@@ -1,6 +1,7 @@
 import numpy as np 
 import pandas as pd
 import datetime
+from sklearn import preprocessing
 
 class Interactions:
     def __init__(self
@@ -36,8 +37,11 @@ class Interactions:
         self.events = events[['visitorid','itemid','event', 'date']]
 
     def compute_ratings(self):
-        self.events['rating'] = self.events['event'].apply(lambda x: 1 if x=='view' else 2 if x=='addtocart' else 3 if x=='transaction' else null)
-        self.events = self.events.sort_values('rating').drop_duplicates(['visitorid','itemid'], keep='last')[['visitorid','itemid','rating']]
+        cat_rating =preprocessing.LabelEncoder()
+        self.train['rating'] = cat_rating.fit_transform(self.train.event)
+        self.test ['rating'] = cat_rating.transform(self.test.event)
+        self.events ['rating'] = cat_rating.transform(self.events.event)
+
         
     def train_test_split(self):
         '''
@@ -46,6 +50,7 @@ class Interactions:
         split_point = np.int(np.round(self.events.shape[0]*self.split_ratio))
         self.train = self.events.iloc[0:split_point]
         self.test = self.events.iloc[split_point::]
+        
     
     def processing_testset(self):
         '''
@@ -55,7 +60,7 @@ class Interactions:
             (self.test['visitorid'].isin(self.train['visitorid'])) & 
             (self.test['itemid'].isin(self.train['itemid']))
         ]
-    
+
     def run_unit_tests(self):
         '''
         Purpose: Unit Test to ensure there are no user or items that are in test but not in train
@@ -69,7 +74,7 @@ class Interactions:
             raise Exception( "Train/Test split failed, make sure users and items in test are already present in train" )
 
     def get_popular_items(self):
-        self.popular_items = list(self.events.groupby([self.item_col], as_index = False)["rating"].sum().sort_values(by='rating', ascending = False)[self.item_col])
+        self.popular_items = list(self.train.groupby([self.item_col], as_index = False)["rating"].sum().sort_values(by='rating', ascending = False)[self.item_col])
 
 class Items:
     def __init__(self, item_col = 'itemid', feat_col = 'feature'):

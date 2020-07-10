@@ -23,8 +23,8 @@ class Preprocessor:
 
     def apply_business_logic(self, items, interactions):
         #All items in train should be available in items
-        interactions.events = interactions.events[(interactions.events['itemid'].isin(items.items['itemid']))]
-        interactions.train = interactions.train[(interactions.train['itemid'].isin(items.items['itemid']))]
+        # interactions.events = interactions.events[(interactions.events['itemid'].isin(items.items['itemid']))]
+        # interactions.train = interactions.train[(interactions.train['itemid'].isin(items.items['itemid']))]
         
         #All in test should be available in train
         interactions.test =  interactions.test[

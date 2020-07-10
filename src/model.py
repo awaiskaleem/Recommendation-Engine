@@ -1,21 +1,13 @@
 import sys
-if 'etl.preprocessing' in sys.modules:  
-    print("Replaced")
-    del sys.modules["etl.preprocessing"]
-sys.path.insert(1, '/Users/awaiskaleem/Documents/Study/git/recom_engine')
 from lightfm import LightFM
 from lightfm.evaluation import auc_score, precision_at_k, recall_at_k
 from etl.feature_extractor import Items, Interactions
 from etl.preprocessing import Preprocessor
 import pickle
 from scipy import sparse
-from flask import Flask, jsonify
 import joblib
 import pandas as pd
 import numpy as np
-from flask import Flask, request, render_template, jsonify
-
-app = Flask(__name__)
 
 class Model:
     def __init__(self, model_path = './artifacts/', data_path = './data/'):
@@ -38,9 +30,9 @@ class Model:
         print("Loading Interactions")
         self.interactions = Interactions()
         self.interactions.fetch_events()
-        self.interactions.compute_ratings()
         self.interactions.train_test_split()
         self.interactions.processing_testset()
+        self.interactions.compute_ratings()
         self.interactions.get_popular_items()
         self.interactions.run_unit_tests()
         #Model Data
@@ -53,11 +45,13 @@ class Model:
 
     def train(self):
         print("Training")
-        self.model_without_items = LightFM(no_components=20, loss='warp', learning_rate=0.01)
+        # self.model_without_items = LightFM(no_components=20, loss='warp', learning_rate=0.01)
+        self.model_without_items = LightFM(no_components=10, loss='warp')
         self.model_without_items = self.fit_model(self.model_without_items, self.model_data)
         self.display_results(self.model_without_items, self.model_data)
         
-        self.model_with_items = LightFM(no_components=20, loss='warp', learning_rate=0.01)
+        # self.model_with_items = LightFM(no_components=20, loss='warp', learning_rate=0.01)
+        self.model_with_items = LightFM(no_components=10, loss='warp')
         self.model_with_items = self.fit_model(self.model_with_items, self.model_data, item_flg = 'items')
         self.display_results(self.model_with_items, self.model_data , item_flg = 'items')
         
@@ -83,7 +77,9 @@ class Model:
         return model.fit(
             model_data.rate_matrix[stage]
             , item_features = item_features
-            , epochs=50, num_threads=8)
+            # , epochs=50, num_threads=8)
+            , epochs=100, num_threads=8)
+            
     
     def display_results(self, model, model_data, item_flg = 'without'):
         result_string = "without"
@@ -95,20 +91,24 @@ class Model:
         auc = auc_score(model = model,
         test_interactions = model_data.rate_matrix['test'],
         item_features = item_feats,
-        num_threads = 4, check_intersections = False)
+        num_threads = 8)
 
+        top_k = 100
         precision = precision_at_k(model = model, 
                                 test_interactions = model_data.rate_matrix['test'],
                                 item_features = item_feats,
-                                num_threads = 4, check_intersections = False)
+                                num_threads = 8,
+                                k = top_k)
 
         recall = recall_at_k(model = model, 
                                 test_interactions = model_data.rate_matrix['test'],
                                 item_features = item_feats,
-                                num_threads = 4, check_intersections = False)
+                                num_threads = 8,
+                                k = top_k)
+
         print("average AUC "+ result_string +" adding item-feature interaction = {0:.{1}f}".format(auc.mean(), 2))
-        print("average Precision "+ result_string +" adding item-feature interaction = {0:.{1}f}".format(precision.mean(), 2))
-        print("average Recall "+ result_string +" adding item-feature interaction = {0:.{1}f}".format(recall.mean(), 2))
+        print("average Precision at "+ str(top_k) +" is "+result_string +" adding item-feature interaction = {0:.{1}f}".format(precision.mean(), 2))
+        print("average Recall at "+ str(top_k) +" is "+ result_string +" adding item-feature interaction = {0:.{1}f}".format(recall.mean(), 2))
 
     def save_models(self, model, filename):
         with open(self.model_path+filename+'.pickle', 'wb') as fle:
