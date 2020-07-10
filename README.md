@@ -7,7 +7,6 @@ The project build on e-commerce user visit data and creates a recommendation eng
 ```
 .
 ├── README.md
-├── __init__.py
 ├── app.py
 ├── artifacts (These will be loaded once trained)
 │   ├── cate_enc_dict_feature.pickle
