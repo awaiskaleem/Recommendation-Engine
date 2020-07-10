@@ -1,5 +1,5 @@
-# E-Commerce-Recommendation-Engine
-### Case Study for Klarna Interview
+# Case Study for Klarna Interview
+### E-Commerce-Recommendation-Engine
 
 The project build on e-commerce user visit data and creates a recommendation engine. Target predictions are items recommended for a particular use. Project also supports batch file as input and output in /output directory.
 

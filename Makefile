@@ -1,7 +1,7 @@
 CURRENT_DIR := $(shell pwd)
 
 NAME = Recommendation Engine
-N?=10
+N?=100
 
 build:
 	@docker-compose up --build
