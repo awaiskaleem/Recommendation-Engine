@@ -1,0 +1,7 @@
+lightfm
+pickle
+scipy
+flask
+sklearn
+pandas
+numpy

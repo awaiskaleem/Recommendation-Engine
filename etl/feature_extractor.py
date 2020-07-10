@@ -3,107 +3,105 @@ import pandas as pd
 import datetime
 
 class Interactions:
-    def __init__(self,path_to_events="../data/events.csv",start_date='2015-5-3',end_date='2015-5-18', split_ratio = 0.8): 
+    def __init__(self
+    ,data_path="./data/"
+    ,start_date='2015-05-03'
+    ,end_date='2015-05-18'
+    , split_ratio = 0.8
+    , user_col = 'visitorid'
+    , item_col = 'itemid'): 
         '''
         Purpose: This class processes events data in e-commerce dataset
         '''
-        self.events = self.read_events(path_to_events)
-        self.events = self.filter_dates(self.events,start_date,end_date)
-        self.events = self.process_rating(self.events)
-        self.train, self.test = self.train_test_split(self.events, split_ratio)
-        del self.events
-        # self.test = self.processing_testset(self.test, self.train)
-        # self.run_unit_tests(self.test, self.train)
+        self.data_path = data_path
+        self.events = pd.DataFrame()
+        self.train = pd.DataFrame()
+        self.test = pd.DataFrame()
+        self.start_date = start_date
+        self.end_date = end_date
+        self.user_col = user_col
+        self.item_col = item_col
+        self.split_ratio = split_ratio
+        self.popular_items = []
         
-        #Get only visitors and items that are in train as well
-        #This is for testing so we have true positives
-
-    def process_rating(self, events):
-        events['rating'] = events['event'].apply(lambda x: 1 if x=='view' else 2 if x=='addtocart' else 3 if x=='transaction' else null)
-        return events.sort_values('rating').drop_duplicates(['visitorid','itemid'], keep='last')[['visitorid','itemid','rating']]
-        
-    def read_events(self, path_to_events):
+    def fetch_events(self):
         '''
         Purpose: read events, format timestamp column from unix format to datetime format
         '''
-        events = pd.read_csv(path_to_events)
+        events = pd.read_csv(self.data_path+'events.csv')
         events = events.assign(date=pd.Series(datetime.datetime.fromtimestamp(i/1000).date() for i in events.timestamp))
         events = events.sort_values('date').reset_index(drop=True)
-        return events[['visitorid','itemid','event', 'date']]
-    
-    def filter_dates(self, events, start_date, end_date):
-        '''
-        Purpose: Filters out date except given dates
-        '''
         fd = lambda x: datetime.datetime.strptime(x, '%Y-%m-%d').date()
-        return events[(events.date >= fd(start_date)) & (events.date <= fd(end_date))]
-    
-    def train_test_split(self, events, split_ratio):
+        events = events[(events.date >= fd(self.start_date)) & (events.date <= fd(self.end_date))]
+        self.events = events[['visitorid','itemid','event', 'date']]
+
+    def compute_ratings(self):
+        self.events['rating'] = self.events['event'].apply(lambda x: 1 if x=='view' else 2 if x=='addtocart' else 3 if x=='transaction' else null)
+        self.events = self.events.sort_values('rating').drop_duplicates(['visitorid','itemid'], keep='last')[['visitorid','itemid','rating']]
+        
+    def train_test_split(self):
         '''
         Purpose: Split events into train and test split given split_ratio
         '''
-        split_point = np.int(np.round(events.shape[0]*split_ratio))
-        return events.iloc[0:split_point], events.iloc[split_point::]
+        split_point = np.int(np.round(self.events.shape[0]*self.split_ratio))
+        self.train = self.events.iloc[0:split_point]
+        self.test = self.events.iloc[split_point::]
     
-    def processing_testset(self, test, train):
+    def processing_testset(self):
         '''
         Purpose: Keeps only those users and items in test set that have some history in train
         '''
-        return test[
-            (test['visitorid'].isin(train['visitorid'])) & 
-            (test['itemid'].isin(train['itemid']))
+        self.test =  self.test[
+            (self.test['visitorid'].isin(self.train['visitorid'])) & 
+            (self.test['itemid'].isin(self.train['itemid']))
         ]
     
-    def run_unit_tests(self, test, train):
+    def run_unit_tests(self):
         '''
         Purpose: Unit Test to ensure there are no user or items that are in test but not in train
         '''
         try:
             assert(
-            len(test[(test['visitorid'].isin(train['visitorid'])==False)])==0
-            & len(test[(test['itemid'].isin(train['itemid'])==False)])==0
+            len(self.test[(self.test['visitorid'].isin(self.train['visitorid'])==False)])==0
+            & len(self.test[(self.test['itemid'].isin(self.train['itemid'])==False)])==0
               )
         except:
             raise Exception( "Train/Test split failed, make sure users and items in test are already present in train" )
 
+    def get_popular_items(self):
+        self.popular_items = list(self.events.groupby([self.item_col], as_index = False)["rating"].sum().sort_values(by='rating', ascending = False)[self.item_col])
 
 class Items:
-    def __init__(self, data_path = '../data/'):
+    def __init__(self, item_col = 'itemid', feat_col = 'feature'):
         '''
         Purpose: Extract Items and their features
         '''
-        self.items, self.category_tree = self.read_data(data_path)
-        self.items.timestamp = self.format_date(self.items.timestamp)
-        self.items = self.get_item_feature_interaction(self.items, self.category_tree)
-
-    def read_data(self, data_path):
-        '''
-        Purpose: Read csvs
-        '''
-        return (
-            pd.concat(
-                [pd.read_csv(data_path+'item_properties_part1.csv')
-                , pd.read_csv(data_path+'item_properties_part2.csv')]),
-                pd.read_csv(data_path+'category_tree.csv')
-                )
-                
-    def format_date(self, time_col):
-        '''
-        Purpose: format date columns from unix format to datetime
-        '''
+        self.data_path = './data/'
+        self.items = pd.DataFrame()
+        self.category_tree = pd.DataFrame()
+        self.item_interactions = pd.DataFrame()
+        self.item_col = item_col
+        self.feat_col = feat_col
+   
+    def fetch_items(self):
+        self.items = pd.concat(
+            [pd.read_csv(self.data_path+'item_properties_part1.csv')
+            , pd.read_csv(self.data_path+'item_properties_part2.csv')])
         times =[]
-        for i in time_col:
-            times.append(datetime.datetime.fromtimestamp(i//1000.0)) 
-        return times
+        for i in self.items.timestamp:
+            times.append(datetime.datetime.fromtimestamp(i//1000.0))
+        self.items.timestamp = times
+        self.category_tree = pd.read_csv(self.data_path+'category_tree.csv')
+
     
-    def get_item_feature_interaction(self, items, category_tree_df):
+    def get_item_feature_interaction(self):
         '''
         Purpose: Extract Item Features
         '''
         #category property
-        items_to_cat = items[(items.property == 'categoryid')][['itemid','value']].drop_duplicates()
+        items_to_cat = self.items[(self.items.property == 'categoryid')][['itemid','value']].drop_duplicates()
         items_to_cat['value'] = items_to_cat['value'].astype(int)
-        item_feature_df = pd.merge(items_to_cat, category_tree_df.rename(columns={'categoryid':'value'}), on='value',  how='left')
+        item_feature_df = pd.merge(items_to_cat, self.category_tree.rename(columns={'categoryid':'value'}), on='value',  how='left')
 
         item_category_df = item_feature_df[["itemid", "value"]].rename(columns = {"value" : "feature"})
         item_category_df["feature_count"] = 1 # adding weight to category feature
@@ -118,22 +116,21 @@ class Items:
         del item_parent_df
 
         # grouping for summing over feature_count
-        return item_feature_df_sub.groupby(["itemid", "feature"], as_index = False)["feature_count"].sum()
+        self.items = item_feature_df_sub.groupby(["itemid", "feature"], as_index = False)["feature_count"].sum()
     
-    def cleanup_items(self, items, intrctions):
+    def cleanup_items(self):
         '''
         Purpose: Keeps only those users and items in items that have some history in interactions
         '''
-        return items[
-            (items['itemid'].isin(intrctions['itemid']))
-        ]
-    def run_unit_tests(self, items, intrctions):
+        self.items = self.items[(self.items['itemid'].isin(self.items['itemid']))]
+
+    def run_unit_tests(self):
         '''
         Purpose: Unit Test to ensure there are no user or items that are in items but not in interactions
         '''
         try:
             assert(
-            len(items[(items['itemid'].isin(intrctions['itemid'])==False)])==0
+            len(self.items[(self.items['itemid'].isin(self.items['itemid'])==False)])==0
               )
         except:
             raise Exception( "Items found that are not in interactions. Clean up items first" )
