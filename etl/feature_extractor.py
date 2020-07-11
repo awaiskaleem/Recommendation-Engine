@@ -7,7 +7,7 @@ class Interactions:
     def __init__(self
     ,data_path="./data/"
     ,start_date='2015-05-03'
-    ,end_date='2015-08-31'
+    ,end_date='2015-05-18'
     , split_ratio = 0.8
     , user_col = 'visitorid'
     , item_col = 'itemid'): 

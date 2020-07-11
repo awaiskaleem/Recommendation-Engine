@@ -1,4 +1,5 @@
 import sys
+import csv
 from lightfm import LightFM
 from lightfm.evaluation import auc_score, precision_at_k, recall_at_k
 from etl.feature_extractor import Items, Interactions
@@ -157,12 +158,30 @@ class Model:
 
     def predict_file(self, recom_num, model, pred_filename = 'predictions'):
         pred_df = pd.read_csv(self.data_path+pred_filename+'.csv')
-        for usr in np.array(pred_df[self.interactions.user_col])[:200]:
-            result_list = []
-            if (self.interactions.train[self.interactions.train[self.interactions.user_col]==usr].shape[0]==0):
-                result_list = self.interactions.popular_items[:recom_num]
-            else:
-                result_list = self.predict_recom(usr, recom_num, model,verbose = False)
-            for i in np.arange(recom_num):
-                pred_df.loc[pred_df['visitorid'] == usr, ["item_"+str(i)]] = round(result_list[i])
-        pred_df.head(200).to_csv('./output/results.csv', index=False, float_format='%.f')
+        header = list(pred_df.columns)
+        all_users = list(pred_df['visitorid'])
+
+        with open('./output/results.csv', 'w', newline='') as myfile:
+                wr = csv.writer(myfile, quoting=csv.QUOTE_NONE)
+                wr.writerow(header)
+
+        with open('./output/results.csv', 'a+', newline='') as myfile:
+            for user in all_users:
+                if (self.interactions.train[self.interactions.train[self.interactions.user_col]==usr].shape[0]==0):
+                    result_list = self.interactions.popular_items[:recom_num]
+                else:
+                    result_list = self.predict_recom(usr, recom_num, model,verbose = False)
+                result_list.insert(0, user)
+                wr = csv.writer(myfile, quoting=csv.QUOTE_NONE)
+                wr.writerow(result_list)
+
+
+        # for usr in np.array(pred_df[self.interactions.user_col])[:200]:
+        #     result_list = []
+        #     if (self.interactions.train[self.interactions.train[self.interactions.user_col]==usr].shape[0]==0):
+        #         result_list = self.interactions.popular_items[:recom_num]
+        #     else:
+        #         result_list = self.predict_recom(usr, recom_num, model,verbose = False)
+        #     for i in np.arange(recom_num):
+        #         pred_df.loc[pred_df['visitorid'] == usr, ["item_"+str(i)]] = round(result_list[i])
+        # pred_df.head(200).to_csv('./output/results.csv', index=False, float_format='%.f')

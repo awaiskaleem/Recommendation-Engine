@@ -14,6 +14,8 @@ app = Flask(__name__)
 
 @app.route('/train')
 def train():
+    if not os.path.exists('./artifacts'):
+        os.makedirs('./artifacts')
     model.train()
     return "Model trained"
 
@@ -37,6 +39,8 @@ def predict(user_id, recom_count):
 @app.route('/predict_file', defaults={'recom_count': 100})
 @app.route('/predict_file/<recom_count>')
 def predict_file(recom_count):
+    if not os.path.exists('./output'):
+        os.makedirs('./output')
     recom_count = int(recom_count)
     model.model_without_items = model.load_models('model_without_items')
     model.model_with_items = model.load_models('model_with_items')
