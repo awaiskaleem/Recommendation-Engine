@@ -76,7 +76,7 @@ If you've already built it before and want to straight up launch your API, type:
 
 ```make launch```
 
-![alt text](https://ibb.co/jTCwv7q)
+![alt text](https://github.com/awaiskaleem/Recommendation-Engine/blob/master/iamges/make_launch.png?raw=true)
 
 ### Model Training
 To train the model
