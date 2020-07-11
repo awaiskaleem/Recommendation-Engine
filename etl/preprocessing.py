@@ -18,6 +18,8 @@ class Preprocessor:
     def get_lists(self,items, interactions):
         self.user_list = np.unique(interactions.events[interactions.user_col])
         self.item_list = np.unique(interactions.events[items.item_col])
+        self.train_user_list = np.unique(interactions.train[interactions.user_col])
+        self.train_item_list = np.unique(interactions.train[items.item_col])
         self.feat_list = np.unique(items.items[items.feat_col])
         
 
@@ -29,9 +31,10 @@ class Preprocessor:
         id_cols=[interactions.user_col,items.item_col]
         for k in id_cols:
             self.cate_enc_dict[k] = preprocessing.LabelEncoder().fit(interactions.train[k].values)
-            self.trans_cat_all[k]=self.cate_enc_dict[k].transform(interactions.events[k].values)
             self.trans_cat_train[k]=self.cate_enc_dict[k].transform(interactions.train[k].values)
             self.trans_cat_test[k]=self.cate_enc_dict[k].transform(interactions.test[k].values)
+
+            self.trans_cat_all[k]=self.cate_enc_dict[k].fit_transform(interactions.events[k].values)
         
         self.cate_enc_dict['feature'] = preprocessing.LabelEncoder().fit(self.feat_list)
         self.items_cat[items.item_col] = self.cate_enc_dict[items.item_col].transform(items.items[items.item_col])
@@ -47,7 +50,7 @@ class Preprocessor:
         self.rate_matrix['train'] = coo_matrix(
             (interactions.train['rating']
             , (self.trans_cat_train['visitorid'], self.trans_cat_train['itemid']))
-            , shape=(len(self.user_list),len(self.item_list)))
+            , shape=(len(self.train_user_list),len(self.train_item_list)))
         
         self.rate_matrix['test'] = coo_matrix(
             (interactions.test['rating']

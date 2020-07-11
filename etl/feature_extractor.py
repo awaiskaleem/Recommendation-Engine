@@ -32,6 +32,7 @@ class Interactions:
         events = pd.read_csv(self.data_path+'events.csv')
         events = events.assign(date=pd.Series(datetime.datetime.fromtimestamp(i/1000).date() for i in events.timestamp))
         events = events.sort_values('date').reset_index(drop=True)
+        
         fd = lambda x: datetime.datetime.strptime(x, '%Y-%m-%d').date()
         events = events[(events.date >= fd(self.start_date)) & (events.date <= fd(self.end_date))]
         self.events = events[['visitorid','itemid','event', 'date']]
@@ -61,10 +62,11 @@ class Interactions:
             (self.test['itemid'].isin(self.train['itemid']))
         ]
 
-        self.events =  self.events[
-            (self.events['visitorid'].isin(self.train['visitorid'])) & 
-            (self.events['itemid'].isin(self.train['itemid']))
+        self.train =  self.train[
+            (self.train['visitorid'].isin(self.test['visitorid'])) & 
+            (self.train['itemid'].isin(self.test['itemid']))
         ]
+
 
     def run_unit_tests(self):
         '''

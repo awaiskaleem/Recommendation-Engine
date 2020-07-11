@@ -1,4 +1,5 @@
 import sys
+import os
 from lightfm import LightFM
 from lightfm.evaluation import auc_score, precision_at_k, recall_at_k
 from etl.feature_extractor import Items, Interactions
