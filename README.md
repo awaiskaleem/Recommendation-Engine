@@ -76,7 +76,7 @@ If you've already built it before and want to straight up launch your API, type:
 
 ```make launch```
 
-![alt text](https://github.com/awaiskaleem/Recommendation-Engine/blob/master/images/make_launch.png?raw=true)
+![alt text](./images/make_launch.png)
 
 ### Model Training
 To train the model
