@@ -82,6 +82,7 @@ If you've already built it before and want to straight up launch your API, type:
 To train the model
 
 ```make train```
+
 ![alt text](./images/make_train.png)
 
 ### Endpoint Predictions
