@@ -58,5 +58,4 @@ if __name__ == "__main__":
     global model
     model = Model()
     model.load_training_data()
-    # model.train()
     app.run(host='0.0.0.0')
