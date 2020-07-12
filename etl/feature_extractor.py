@@ -54,9 +54,6 @@ class Interactions:
             (self.train['visitorid'].isin(self.test['visitorid'])) & 
             (self.train['itemid'].isin(self.test['itemid']))
         ]
-        print(len(
-            self.test[(self.test['visitorid'].isin(self.train['visitorid'])==False)]),len(self.test[(self.test['itemid'].isin(self.train['itemid'])==False)]))
-        
 
         self.test =  self.test[
             (self.test['visitorid'].isin(self.train['visitorid'])) & 
@@ -106,6 +103,7 @@ class Items:
             times.append(datetime.datetime.fromtimestamp(i//1000.0))
         self.items.timestamp = times
         self.category_tree = pd.read_csv(self.data_path+'category_tree.csv')
+        self.category_tree.loc[self.category_tree.parentid!=self.category_tree.parentid, 'parentid'] = 0
 
     
     def get_item_feature_interaction(self):
