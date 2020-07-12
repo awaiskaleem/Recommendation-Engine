@@ -51,7 +51,7 @@ class Interactions:
 
     def processing_testset(self):
         '''
-        Purpose: Keeps only those users and items in test set that have some history in train
+        Purpose: Keeps only those users and items in test set that have some history in train, and vice versa
         '''
         self.train =  self.train[
             (self.train['visitorid'].isin(self.test['visitorid'])) & 
@@ -65,6 +65,9 @@ class Interactions:
 
         
     def compute_ratings(self):
+        '''
+        Purpose: Here we encode the events for given interactions
+        '''
         cat_rating =preprocessing.LabelEncoder()
         self.train['rating'] = cat_rating.fit_transform(self.train.event)
         self.test ['rating'] = cat_rating.transform(self.test.event)
@@ -83,7 +86,7 @@ class Interactions:
             raise Exception( "Train/Test split failed, make sure users and items in test are already present in train" )
 
     def get_popular_items(self):
-        self.popular_items = list(self.train.groupby([self.item_col], as_index = False)["rating"].sum().sort_values(by='rating', ascending = False)[self.item_col])
+        self.popular_items = list(self.events[self.events['event']!='view'].groupby([self.item_col], as_index = False)["rating"].sum().sort_values(by='rating', ascending = False)[self.item_col])
 
 class Items:
     def __init__(self, item_col = 'itemid', feat_col = 'feature'):
@@ -98,6 +101,9 @@ class Items:
         self.feat_col = feat_col
    
     def fetch_items(self):
+        '''
+        Purpose: To get data from items files, process their time fields
+        '''
         self.items = pd.concat(
             [pd.read_csv(self.data_path+'item_properties_part1.csv')
             , pd.read_csv(self.data_path+'item_properties_part2.csv')])
@@ -112,7 +118,7 @@ class Items:
     
     def get_item_feature_interaction(self):
         '''
-        Purpose: Extract Item Features
+        Purpose: Extract Item Features, this can be extended to other features as well
         '''
         #category property
         items_to_cat = self.items[(self.items.property == 'categoryid')][['itemid','value']].drop_duplicates()

@@ -21,6 +21,9 @@ class Model:
         self.data_path = data_path
         
     def load_training_data(self):
+        '''
+        Purpose: Load items and events data for model processing
+        '''
         #Items
         print("Loading Items")
         self.items.fetch_items()
@@ -45,6 +48,9 @@ class Model:
         self.model_data.create_matrices(self.items, self.interactions)
 
     def train(self):
+        '''
+        Purpose: Train the model using train subset
+        '''
         print("Training")
         self.model_without_items = LightFM(no_components=30, loss='warp', learning_rate = 0.01)
         self.model_without_items = self.fit_model(self.model_without_items, self.model_data)
@@ -68,6 +74,9 @@ class Model:
         self.save_matrices(self.model_data.rate_matrix)
 
     def fit_model(self, model, model_data, item_flg = '', stage = "train"):
+        '''
+        Purpose: Fit model
+        '''
         item_features= None
         result_string = "Training model WITHOUT items"
         if item_flg == 'items':
@@ -81,6 +90,9 @@ class Model:
             
     
     def display_results(self, model, model_data, item_flg = 'without'):
+        '''
+        Purpose: Display results for model training
+        '''
         result_string = "without"
         item_feats = None
         if item_flg=='items':
@@ -104,24 +116,39 @@ class Model:
         print("average Recall at "+ str(top_k) +" is "+ result_string +" adding item-feature interaction = {0:.{1}f}".format(recall.mean(), 2))
 
     def save_models(self, model, filename):
+        '''
+        Purpose: Save models to pickels
+        '''
         with open(self.model_path+filename+'.pickle', 'wb') as fle:
             pickle.dump(model, fle, protocol=pickle.HIGHEST_PROTOCOL)
 
     def save_matrices(self, matrix):
+        '''
+        Purpose: Save matrices to files
+        '''
         for matrix_name in matrix:
             print("Saving Matrix"+matrix_name)
             sparse.save_npz(self.model_path+'rate_matrix_'+matrix_name+'.npz', matrix[matrix_name])
 
     def load_models(self, filename):
+        '''
+        Purpose: Load previosuly saved models
+        '''
         print("Pickel Load Model: "+filename)
         with open(self.model_path+filename+'.pickle', 'rb') as fid:
             return pickle.load(fid)
 
     def load_matrices(self,matrix_name):
+        '''
+        Purpose: Load previously saved matrices
+        '''
         print("Loading Matrix: "+matrix_name)
         self.model_data.rate_matrix[matrix_name] = sparse.load_npz(self.model_path+'rate_matrix_'+matrix_name+'.npz')
 
     def predict_recom(self, user_id_orig, recom_num, model, verbose = True):
+        '''
+        Purpose: Predict for a single user and return an array of results
+        '''
         user_id = self.model_data.cate_enc_dict['visitorid'].transform([user_id_orig])
 
         #Known Positives
@@ -136,6 +163,9 @@ class Model:
         return list(top_items[:recom_num])
 
     def print_recommendations(self, user_id, known_positives, top_items, recom_num):
+        '''
+        Purpose: Print out the recommendations given verbose
+        '''
         print("User %s" % user_id)
         print("     Known positives:")
         for x in known_positives[:recom_num]:
@@ -146,6 +176,9 @@ class Model:
             print("                  %s" % x)
 
     def get_predictions(self, recom_num, usr, model):
+        '''
+        Purpose: Get predictions for a single user
+        '''
         print("Predicting for user:",usr)
         result_list = []
         if (self.interactions.events[self.interactions.events['visitorid']==usr].shape[0]==0):
@@ -157,6 +190,9 @@ class Model:
         return result_list
 
     def predict_file(self, recom_num, model, pred_filename = 'predictions'):
+        '''
+        Purpose: For batch predictions, the file must be placed in ./data/ directory
+        '''
         pred_df = pd.read_csv(self.data_path+pred_filename+'.csv')
         header = list(pred_df.columns)
         all_users = list(pred_df['visitorid'])

@@ -16,18 +16,25 @@ class Preprocessor:
         self.rate_matrix = dict()
 
     def get_lists(self,items, interactions):
+        '''
+        Purpose: get list of users, items and features from dataset
+        '''
         self.user_list = np.unique(interactions.events[interactions.user_col])
         self.item_list = np.unique(interactions.events[items.item_col])
-        # self.train_user_list = np.unique(interactions.train[interactions.user_col])
-        # self.train_item_list = np.unique(interactions.train[items.item_col])
         self.feat_list = np.unique(items.items[items.feat_col])
         
 
     def apply_business_logic(self, items, interactions):
+        '''
+        Purpose: Any business related rules to apply
+        '''
         items.items = items.items[(items.items['itemid'].isin(interactions.events['itemid']))]
         return items, interactions
 
     def premodel_processing(self, items, interactions, feature_col = 'features'):
+        '''
+        Purpose: Create encoders ot be used for matrices
+        '''
         id_cols=[interactions.user_col,items.item_col]
         for k in id_cols:
             self.cate_enc_dict[k] = preprocessing.LabelEncoder().fit(interactions.train[k].values)
@@ -41,7 +48,9 @@ class Preprocessor:
         self.items_cat['feature'] = self.cate_enc_dict['feature'].transform(items.items['feature'])
 
     def create_matrices(self, items, interactions):
-        
+        '''
+        Purpose: Interaction matrices creation
+        '''
         self.rate_matrix['all'] = coo_matrix(
             (interactions.events['rating']
             , (self.trans_cat_all['visitorid'], self.trans_cat_all['itemid']))

@@ -16,14 +16,14 @@ shutdown:
 
 help:
 	@echo "Following are the \"make\" options available:"
-	@echo "====>build -- build docker image for recommendation engine"
-	@echo "====>train -- this will train using data available in ./data/ directory"
-	@echo "====>predict user_id N -- will give back N predictions for user_id"
-	@echo "====>predict_file - will add predictions to ./data/predictions.csv and save it to ./output/"
-	@echo "====>print this for Klarna :)"
+	@echo "====>build   			--build docker image for recommendation engine"
+	@echo "====>train  			--this will train using data available in ./data/ directory"
+	@echo "====>predict user_id N  	--will give back N predictions for user_id"
+	@echo "====>predict_file 		--will add predictions to ./data/predictions.csv and save it to ./output/"
+	@echo "====>print			--Try me :)"
     
 print:
-	@echo "this"
+	@echo "(:"
     
 train:
 	@curl http://0.0.0.0:5000/train
