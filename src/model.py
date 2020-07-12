@@ -167,7 +167,7 @@ class Model:
 
         with open('./output/results.csv', 'a+', newline='') as myfile:
             for usr in all_users:
-                if (self.interactions.train[self.interactions.train[self.interactions.user_col]==usr].shape[0]==0):
+                if (self.interactions.events[self.interactions.events[self.interactions.user_col]==usr].shape[0]==0):
                     result_list = self.interactions.popular_items[:recom_num]
                 else:
                     result_list = self.predict_recom(usr, recom_num, model,verbose = False)
