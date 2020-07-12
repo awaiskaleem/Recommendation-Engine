@@ -18,8 +18,8 @@ class Preprocessor:
     def get_lists(self,items, interactions):
         self.user_list = np.unique(interactions.events[interactions.user_col])
         self.item_list = np.unique(interactions.events[items.item_col])
-        self.train_user_list = np.unique(interactions.train[interactions.user_col])
-        self.train_item_list = np.unique(interactions.train[items.item_col])
+        # self.train_user_list = np.unique(interactions.train[interactions.user_col])
+        # self.train_item_list = np.unique(interactions.train[items.item_col])
         self.feat_list = np.unique(items.items[items.feat_col])
         
 
@@ -50,12 +50,12 @@ class Preprocessor:
         self.rate_matrix['train'] = coo_matrix(
             (interactions.train['rating']
             , (self.trans_cat_train['visitorid'], self.trans_cat_train['itemid']))
-            , shape=(len(self.train_user_list),len(self.train_item_list)))
+            , shape=(len(self.user_list),len(self.item_list)))
         
         self.rate_matrix['test'] = coo_matrix(
             (interactions.test['rating']
             , (self.trans_cat_test['visitorid'], self.trans_cat_test['itemid']))
-            , shape=(len(self.train_user_list),len(self.train_item_list)))
+            , shape=(len(self.user_list),len(self.item_list)))
         
         self.rate_matrix['feature'] = coo_matrix(
             (items.items['feature_count']
