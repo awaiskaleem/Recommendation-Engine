@@ -88,10 +88,13 @@ To train the model
 ### Endpoint Predictions
 Get N item_id recommendations for a given user_id by 
 
-```make predict user_id=123455``` 
+```make predict user_id=123``` 
+
+![alt text](./images/make_default_predictions.png)
 
 ```make predict user_id=123455 N=7```  
 
+![alt text](./images/make_N_predictions.png)
 
 Note that if the user id is known, it will output existing knowledge and recommendations. If user is new and never seen before (from model's point of view), it will output most popular items, currently known.
 
