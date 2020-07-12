@@ -33,9 +33,10 @@ class Model:
         self.interactions.fetch_events()
         self.interactions.train_test_split()
         self.interactions.processing_testset()
+        self.interactions.run_unit_tests()
         self.interactions.compute_ratings()
         self.interactions.get_popular_items()
-        self.interactions.run_unit_tests()
+        
         #Model Data
         print("Preparing Model Data")
         self.model_data = Preprocessor()

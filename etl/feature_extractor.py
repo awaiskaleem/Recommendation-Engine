@@ -29,21 +29,15 @@ class Interactions:
         '''
         Purpose: read events, format timestamp column from unix format to datetime format
         '''
-        events = pd.read_csv(self.data_path+'events.csv')
-        events = events.assign(date=pd.Series(datetime.datetime.fromtimestamp(i/1000).date() for i in events.timestamp))
-        events = events.sort_values('date').reset_index(drop=True)
+        self.events = pd.read_csv(self.data_path+'events.csv')
+        self.events = self.events.drop_duplicates(subset=['timestamp', 'visitorid','itemid'], keep = 'first')
+        self.events = self.events.assign(date=pd.Series(datetime.datetime.fromtimestamp(i/1000).date() for i in self.events.timestamp))
+        self.events = self.events.sort_values('date').reset_index(drop=True)
         
         fd = lambda x: datetime.datetime.strptime(x, '%Y-%m-%d').date()
-        events = events[(events.date >= fd(self.start_date)) & (events.date <= fd(self.end_date))]
-        self.events = events[['visitorid','itemid','event', 'date']]
+        self.events = self.events[(self.events.date >= fd(self.start_date)) & (self.events.date <= fd(self.end_date))]
+        self.events = self.events[['visitorid','itemid','event', 'date']]
 
-    def compute_ratings(self):
-        cat_rating =preprocessing.LabelEncoder()
-        self.train['rating'] = cat_rating.fit_transform(self.train.event)
-        self.test ['rating'] = cat_rating.transform(self.test.event)
-        self.events ['rating'] = cat_rating.transform(self.events.event)
-
-        
     def train_test_split(self):
         '''
         Purpose: Split events into train and test split given split_ratio
@@ -51,22 +45,30 @@ class Interactions:
         split_point = np.int(np.round(self.events.shape[0]*self.split_ratio))
         self.train = self.events.iloc[0:split_point]
         self.test = self.events.iloc[split_point::]
-        
-    
+
     def processing_testset(self):
         '''
         Purpose: Keeps only those users and items in test set that have some history in train
         '''
+        self.train =  self.train[
+            (self.train['visitorid'].isin(self.test['visitorid'])) & 
+            (self.train['itemid'].isin(self.test['itemid']))
+        ]
+        print(len(
+            self.test[(self.test['visitorid'].isin(self.train['visitorid'])==False)]),len(self.test[(self.test['itemid'].isin(self.train['itemid'])==False)]))
+        
+
         self.test =  self.test[
             (self.test['visitorid'].isin(self.train['visitorid'])) & 
             (self.test['itemid'].isin(self.train['itemid']))
         ]
 
-        self.train =  self.train[
-            (self.train['visitorid'].isin(self.test['visitorid'])) & 
-            (self.train['itemid'].isin(self.test['itemid']))
-        ]
-
+        
+    def compute_ratings(self):
+        cat_rating =preprocessing.LabelEncoder()
+        self.train['rating'] = cat_rating.fit_transform(self.train.event)
+        self.test ['rating'] = cat_rating.transform(self.test.event)
+        self.events ['rating'] = cat_rating.fit_transform(self.events.event)
 
     def run_unit_tests(self):
         '''
