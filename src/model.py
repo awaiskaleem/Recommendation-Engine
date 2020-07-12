@@ -167,12 +167,12 @@ class Model:
                 wr.writerow(header)
 
         with open('./output/results.csv', 'a+', newline='') as myfile:
-            for user in all_users:
+            for usr in all_users[:200]:
                 if (self.interactions.train[self.interactions.train[self.interactions.user_col]==usr].shape[0]==0):
                     result_list = self.interactions.popular_items[:recom_num]
                 else:
                     result_list = self.predict_recom(usr, recom_num, model,verbose = False)
-                result_list.insert(0, user)
+                result_list.insert(0, usr)
                 wr = csv.writer(myfile, quoting=csv.QUOTE_NONE)
                 wr.writerow(result_list)
 
