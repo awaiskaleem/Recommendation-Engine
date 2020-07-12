@@ -32,7 +32,7 @@ class Interactions:
         self.events = pd.read_csv(self.data_path+'events.csv')
         self.events = self.events.drop_duplicates(subset=['timestamp', 'visitorid','itemid'], keep = 'first')
         self.events['sequence'] = self.events['event'].apply(lambda x: 1 if x=='view' else 2 if x=='addtocart' else 3 if x=='transaction' else null)
-        self.events = self.events.sort_values('sequence').drop_duplicates(['visitorid','itemid'], keep='last')[['visitorid','itemid','sequence']]
+        self.events = self.events.sort_values('sequence').drop_duplicates(['visitorid','itemid'], keep='last')
 
         self.events = self.events.assign(date=pd.Series(datetime.datetime.fromtimestamp(i/1000).date() for i in self.events.timestamp))
         self.events = self.events.sort_values('date').reset_index(drop=True)
