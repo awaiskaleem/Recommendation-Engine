@@ -7,7 +7,7 @@ class Interactions:
     def __init__(self
     ,data_path="./data/"
     ,start_date='2015-05-03'
-    ,end_date='2015-08-30'
+    ,end_date='2015-05-18'
     , split_ratio = 0.75
     , user_col = 'visitorid'
     , item_col = 'itemid'): 
@@ -31,9 +31,11 @@ class Interactions:
         '''
         self.events = pd.read_csv(self.data_path+'events.csv')
         self.events = self.events.drop_duplicates(subset=['timestamp', 'visitorid','itemid'], keep = 'first')
+        self.events['sequence'] = self.events['event'].apply(lambda x: 1 if x=='view' else 2 if x=='addtocart' else 3 if x=='transaction' else null)
+        self.events = self.events.sort_values('sequence').drop_duplicates(['visitorid','itemid'], keep='last')[['visitorid','itemid','sequence']]
+
         self.events = self.events.assign(date=pd.Series(datetime.datetime.fromtimestamp(i/1000).date() for i in self.events.timestamp))
         self.events = self.events.sort_values('date').reset_index(drop=True)
-        
         fd = lambda x: datetime.datetime.strptime(x, '%Y-%m-%d').date()
         self.events = self.events[(self.events.date >= fd(self.start_date)) & (self.events.date <= fd(self.end_date))]
         self.events = self.events[['visitorid','itemid','event', 'date']]
