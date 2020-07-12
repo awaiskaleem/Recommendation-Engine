@@ -55,7 +55,7 @@ class Preprocessor:
         self.rate_matrix['test'] = coo_matrix(
             (interactions.test['rating']
             , (self.trans_cat_test['visitorid'], self.trans_cat_test['itemid']))
-            , shape=(len(self.user_list),len(self.item_list)))
+            , shape=(len(self.train_user_list),len(self.train_item_list)))
         
         self.rate_matrix['feature'] = coo_matrix(
             (items.items['feature_count']

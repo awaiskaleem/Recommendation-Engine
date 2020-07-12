@@ -8,7 +8,7 @@ class Interactions:
     ,data_path="./data/"
     ,start_date='2015-05-03'
     ,end_date='2015-05-18'
-    , split_ratio = 0.8
+    , split_ratio = 0.75
     , user_col = 'visitorid'
     , item_col = 'itemid'): 
         '''
