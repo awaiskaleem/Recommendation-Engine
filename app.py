@@ -9,7 +9,7 @@ import pickle
 import numpy as np
 import pandas as pd
 import joblib
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, Response
 
 app = Flask(__name__)
 
@@ -35,7 +35,8 @@ def predict(user_id, recom_count):
     
     final_result = model.get_predictions(recom_count,user_id,model.model_without_items)
     print("Success")
-    return jsonify(final_result)
+    print(final_result)
+    return Response(json.dumps(final_result),  mimetype='application/json')
 
 @app.route('/predict_file', defaults={'recom_count': 100})
 @app.route('/predict_file/<recom_count>')
