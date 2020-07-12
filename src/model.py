@@ -25,7 +25,6 @@ class Model:
         print("Loading Items")
         self.items.fetch_items()
         self.items.get_item_feature_interaction()
-        self.items.cleanup_items()
         self.items.run_unit_tests()
         #Interactions
         print("Loading Interactions")

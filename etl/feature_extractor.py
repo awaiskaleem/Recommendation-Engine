@@ -31,8 +31,9 @@ class Interactions:
         '''
         self.events = pd.read_csv(self.data_path+'events.csv')
         self.events = self.events.drop_duplicates(subset=['timestamp', 'visitorid','itemid'], keep = 'first')
-        self.events['sequence'] = self.events['event'].apply(lambda x: 1 if x=='view' else 2 if x=='addtocart' else 3 if x=='transaction' else null)
-        self.events = self.events.sort_values('sequence').drop_duplicates(['visitorid','itemid'], keep='last')
+        # Did not add to score
+        # self.events['sequence'] = self.events['event'].apply(lambda x: 1 if x=='view' else 2 if x=='addtocart' else 3 if x=='transaction' else null)
+        # self.events = self.events.sort_values('sequence').drop_duplicates(['visitorid','itemid'], keep='last')
 
         self.events = self.events.assign(date=pd.Series(datetime.datetime.fromtimestamp(i/1000).date() for i in self.events.timestamp))
         self.events = self.events.sort_values('date').reset_index(drop=True)
@@ -100,13 +101,14 @@ class Items:
         self.items = pd.concat(
             [pd.read_csv(self.data_path+'item_properties_part1.csv')
             , pd.read_csv(self.data_path+'item_properties_part2.csv')])
+        self.items = self.items.drop_duplicates(subset=['itemid','property','value'], keep = 'first')
         times =[]
         for i in self.items.timestamp:
             times.append(datetime.datetime.fromtimestamp(i//1000.0))
         self.items.timestamp = times
         self.category_tree = pd.read_csv(self.data_path+'category_tree.csv')
         self.category_tree.loc[self.category_tree.parentid!=self.category_tree.parentid, 'parentid'] = 0
-
+        
     
     def get_item_feature_interaction(self):
         '''
@@ -132,12 +134,6 @@ class Items:
         # grouping for summing over feature_count
         self.items = item_feature_df_sub.groupby(["itemid", "feature"], as_index = False)["feature_count"].sum()
     
-    def cleanup_items(self):
-        '''
-        Purpose: Keeps only those users and items in items that have some history in interactions
-        '''
-        self.items = self.items[(self.items['itemid'].isin(self.items['itemid']))]
-
     def run_unit_tests(self):
         '''
         Purpose: Unit Test to ensure there are no user or items that are in items but not in interactions
