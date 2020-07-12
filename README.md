@@ -67,13 +67,13 @@ If the data is already downloaded then copy the *.csv files into `./data` folder
 
 ## Project Environment Setup
 
-You can use the makefile to start the docker services in the background. At any point in time if you're not sure about the comment type in ```make help``` to display a list of options available. To setup whole API environment, simply type:
+The entire project can be set up in four simple steps. Before that, as mentioned above, you need to clone this repository and download data from original source. You can use the makefile to start the docker services in the background. At any point in time if you're not sure about the comment type in ```make help``` to display a list of options available. To setup whole API environment, simply type:
 
 ```make help```
 
 ![alt text](./images/make_help.png)
 
-### Docker Composition
+### 1. Docker Composition
 
 ```make build```
 
@@ -84,14 +84,14 @@ If you've already built it before and want to straight up launch your API, type:
 
 ![alt text](./images/make_launch.png)
 
-### Model Training
+### 2. Model Training
 To train the model
 
 ```make train```
 
 ![alt text](./images/make_train.png)
 
-### Endpoint Predictions
+### 3a. Endpoint Predictions
 Get N item_id recommendations for a given user_id by 
 
 ```make predict user_id=123``` 
@@ -104,12 +104,12 @@ Get N item_id recommendations for a given user_id by
 
 Note that if the user id is known, it will output existing knowledge and recommendations. If user is new and never seen before (from model's point of view), it will output most popular items, currently known.
 
-### Batch Predictions
+### 3b. Batch Predictions
 To use file based predictions, you need "prediction.csv" inside ./data folder before you launch. A file named "results.csv" will be created as a result of batch predictions.
 
 ```make predict_file```
 
-### ShutDown
+### 4. ShutDown
 
 Simply type:
 
